@@ -1,7 +1,9 @@
 package commands
 
 import (
+	"context"
 	"fmt"
+	"os"
 
 	"github.com/DryHop2/gator/internal/state"
 )
@@ -12,7 +14,14 @@ func HandlerLogin(s *state.State, cmd Command) error {
 	}
 
 	username := cmd.Args[0]
-	err := s.Cfg.SetUser(username)
+
+	_, err := s.DB.GetUserByName(context.Background(), username)
+	if err != nil {
+		fmt.Printf("user %s does not exist\n", username)
+		os.Exit(1)
+	}
+
+	err = s.Cfg.SetUser(username)
 	if err != nil {
 		return fmt.Errorf("failed to set user: %w", err)
 	}

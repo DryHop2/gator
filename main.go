@@ -1,12 +1,16 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/DryHop2/gator/internal/commands"
 	"github.com/DryHop2/gator/internal/config"
+	"github.com/DryHop2/gator/internal/database"
 	"github.com/DryHop2/gator/internal/state"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -16,7 +20,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	appState := &state.State{Cfg: cfg}
+	db, err := sql.Open("postgres", cfg.DBURL)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+
+	dbQueries := database.New(db)
+
+	appState := &state.State{
+		DB:  dbQueries,
+		Cfg: cfg,
+	}
 
 	if len(os.Args) < 2 {
 		fmt.Println("You must provide a command.")
@@ -30,6 +44,8 @@ func main() {
 
 	cmds := commands.New()
 	cmds.Register("login", commands.HandlerLogin)
+	cmds.Register("register", commands.HandlerRegister)
+	cmds.Register("reset", commands.HandlerReset)
 
 	err = cmds.Run(appState, cmd)
 	if err != nil {
