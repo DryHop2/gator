@@ -52,6 +52,8 @@ func main() {
 	cmds.Register("agg", commands.HandlerAgg)
 	cmds.Register("addfeed", commands.HandlerAddFeed)
 	cmds.Register("feeds", commands.HandlerFeeds)
+	cmds.Register("follow", commands.HandlerFollow)
+	cmds.Register("following", commands.HanlderFollowing)
 
 	err = cmds.Run(appState, cmd)
 	if err != nil {
