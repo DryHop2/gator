@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -28,6 +29,7 @@ func main() {
 	dbQueries := database.New(db)
 
 	appState := &state.State{
+		Ctx: context.Background(),
 		DB:  dbQueries,
 		Cfg: cfg,
 	}
@@ -49,6 +51,7 @@ func main() {
 	cmds.Register("users", commands.HandlerUsers)
 	cmds.Register("agg", commands.HandlerAgg)
 	cmds.Register("addfeed", commands.HandlerAddFeed)
+	cmds.Register("feeds", commands.HandlerFeeds)
 
 	err = cmds.Run(appState, cmd)
 	if err != nil {
