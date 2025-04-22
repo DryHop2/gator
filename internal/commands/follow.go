@@ -10,17 +10,17 @@ import (
 	"github.com/google/uuid"
 )
 
-func HandlerFollow(s *state.State, cmd Command) error {
+func HandlerFollow(s *state.State, cmd Command, user database.User) error {
 	if len(cmd.Args) < 1 {
 		return fmt.Errorf("you must provide a feed url")
 	}
 
 	url := cmd.Args[0]
 
-	user, err := s.DB.GetUserByName(context.Background(), s.Cfg.CurrentUser)
-	if err != nil {
-		return fmt.Errorf("failed to find current user: %w", err)
-	}
+	// user, err := s.DB.GetUserByName(context.Background(), s.Cfg.CurrentUser)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to find current user: %w", err)
+	// }
 
 	feed, err := s.DB.GetFeedByURL(context.Background(), url)
 	if err != nil {

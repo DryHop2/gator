@@ -4,14 +4,15 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/DryHop2/gator/internal/database"
 	"github.com/DryHop2/gator/internal/state"
 )
 
-func HanlderFollowing(s *state.State, cmd Command) error {
-	user, err := s.DB.GetUserByName(context.Background(), s.Cfg.CurrentUser)
-	if err != nil {
-		return fmt.Errorf("could not get current user: %w", err)
-	}
+func HanlderFollowing(s *state.State, cmd Command, user database.User) error {
+	// user, err := s.DB.GetUserByName(context.Background(), s.Cfg.CurrentUser)
+	// if err != nil {
+	// 	return fmt.Errorf("could not get current user: %w", err)
+	// }
 
 	follows, err := s.DB.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
