@@ -47,6 +47,7 @@ func main() {
 	cmds.Register("register", commands.HandlerRegister)
 	cmds.Register("reset", commands.HandlerReset)
 	cmds.Register("users", commands.HandlerUsers)
+	cmds.Register("agg", commands.HandlerAgg)
 
 	err = cmds.Run(appState, cmd)
 	if err != nil {
