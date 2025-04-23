@@ -4,11 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/DryHop2/gator/internal/database"
 	"github.com/DryHop2/gator/internal/rss"
 	"github.com/DryHop2/gator/internal/state"
+	"github.com/google/uuid"
 )
 
 func scrapeFeeds(s *state.State) {
@@ -42,7 +44,32 @@ func scrapeFeeds(s *state.State) {
 		return
 	}
 
+	layout := "Mon, 02 Jan 2006 15:04:05 MST"
+
 	for _, item := range parsedFeed.Channel.Item {
-		fmt.Printf("- %s (%s)\n", item.Title, item.PubDate)
+		pubTime, err := time.Parse(layout, item.PubDate)
+		if err != nil {
+			fmt.Println("Could not parse publication time:", err)
+			continue
+		}
+
+		err = s.DB.CreatePost(context.Background(), database.CreatePostParams{
+			ID:          uuid.New(),
+			CreatedAt:   now,
+			UpdatedAt:   now,
+			Title:       item.Title,
+			Url:         item.Link,
+			Description: sql.NullString{String: item.Description, Valid: item.Description != ""},
+			PublishedAt: sql.NullTime{Time: pubTime, Valid: true},
+			FeedID:      feed.ID,
+		})
+
+		if err != nil {
+			if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+				continue
+			}
+			fmt.Println("Failed to save posit:", err)
+
+		}
 	}
 }
