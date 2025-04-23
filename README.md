@@ -24,7 +24,7 @@ cd gator
 ### 2. Install the CLI
 ```go install```
 This builds and installs the gator binary into your ```$GOPATH/bin```. You should be able to run it like any CLI tool:
-``` gator login your_name```
+```gator login your_name```
 
 ### 3. Config Setup
 Gator stores configuration in a JSON file at ~/.gatorconfig.json.
@@ -33,6 +33,7 @@ Manually create this file with the following structure:
 {
     "db_url": "postgres://your_user:your_password@localhost:5432/gator?sslmode=disable"
 }
+```
 The ```current_user``` field is automatically set by the ```login``` or ```register``` commands.
 
 ### 4. Common Commands
