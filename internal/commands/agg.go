@@ -1,29 +1,32 @@
 package commands
 
 import (
-	"context"
 	"fmt"
+	"time"
 
-	"github.com/DryHop2/gator/internal/rss"
 	"github.com/DryHop2/gator/internal/state"
 )
 
 func HandlerAgg(s *state.State, cmd Command) error {
-	const feedURL = "https://www.wagslane.dev/index.xml"
-
-	feed, err := rss.FetchFeed(context.Background(), feedURL)
-	if err != nil {
-		return fmt.Errorf("failed to fetch feed: %w", err)
+	if len(cmd.Args) != 1 {
+		return fmt.Errorf("usage: agg <duration>")
 	}
 
-	// fmt.Printf("Feed Title: %s\n", feed.Channel.Title)
-	// fmt.Printf("Feed Description: %s\n", feed.Channel.Description)
-	// fmt.Println("Articles:")
-	// for _, item := range feed.Channel.Item {
-	// 	fmt.Printf("- %s (%s)\n", item.Title, item.PubDate)
-	// }
+	duration, err := time.ParseDuration(cmd.Args[0])
+	if err != nil {
+		return fmt.Errorf("invalid duration: %w", err)
+	}
 
-	fmt.Printf("%+v\n", feed)
+	fmt.Printf("Collecting feeds every %s\n", duration)
+
+	ticker := time.NewTicker(duration)
+	defer ticker.Stop()
+
+	scrapeFeeds(s)
+
+	for range ticker.C {
+		scrapeFeeds(s)
+	}
 
 	return nil
 }
